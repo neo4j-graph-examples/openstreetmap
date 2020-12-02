@@ -1,0 +1,15 @@
+{
+    "name": "openstreetmap",
+    "description":"",
+    "scriptFile":"scripts/import.cypher",
+    "dbms": [
+      {
+          "dumpFile": "data/openstreetmap-35.dump",
+          "targetNeo4jVersion":"3.5"
+      },
+      {
+          "dumpFile": "data/openstreetmap-40.dump",
+          "targetNeo4jVersion": "^4.0"
+      }
+  ]
+}

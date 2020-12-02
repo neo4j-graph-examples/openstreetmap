@@ -1,0 +1,65 @@
+:name: openstreetmap
+:long-name: OpenStreetMap (OSM)
+:description: 
+:icon: 
+:logo: documentation/img/osm-logo.png
+:tags: example-data, dataset, map-data, geographic, openstreetmap
+:author: William Lyon
+:use-load-script: scripts/openstreetmap.cypher
+:data: import/*.csv
+:use-dump-file: data/openstreetmap-40.dump
+:use-plugin: 
+:target-db-version: 3.5,4.0
+:bloom-perspective: bloom/openstreetmap.bloom-perspective
+:guide: documentation/openstreetmap.neo4j-browser-guide
+:rendered-guide: https://guides.neo4j.com/sandbox/openstreetmap/index.html
+:model: documentation/img/model.png
+:example: documentation/img/example.png
+
+:query: 
+
+:param-name: 
+:param-value: 
+:result-column: 
+:expected-result: 
+
+:model-guide:
+:todo: 
+image::{logo}[width=100]
+
+== {long-name} Graph Example
+
+Description: _{description}_
+
+.Model
+image::{model}[]
+
+.Example
+image::{example}[width=600]
+
+.Example Query:
+[source,cypher,subs=attributes]
+----
+{query}
+----
+
+=== Setup
+
+This is for Neo4j version: `{target-db-version}`
+
+Rendered guide available from: `:play openstreetmap` 
+// or `:play {rendered-guide}``
+
+Import Script: `cypher-shell -a <address> -u neo4j -p <password> -f {use-load-script}`
+
+Unrendered guide: link:{guide}[]
+
+Data files: `{data}`
+
+=== Code Examples
+
+* link:code/javascript/example.js[JavaScript]
+* link:code/java/Example.java[Java]
+* link:code/csharp/Example.cs[C#]
+* link:code/python/example.py[Python]
+* link:code/go/example.go[Go]
