@@ -1,6 +1,6 @@
 :name: openstreetmap
 :long-name: OpenStreetMap (OSM)
-:description: 
+:description: Use Neo4j with the global geodata provided in OpenStreetMap
 :icon: 
 :logo: documentation/img/osm-logo.png
 :tags: example-data, dataset, map-data, geographic, openstreetmap
@@ -16,12 +16,14 @@
 :model: documentation/img/model.png
 :example: documentation/img/example.png
 
-:query: 
+:query: MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest) +
+WHERE p1<>p2 AND distance(p1.location,p2.location) < 200 +
+RETURN p2.name as name +
 
-:param-name: 
-:param-value: 
-:result-column: 
-:expected-result: 
+:param-name: type
+:param-value: clock
+:result-column: name
+:expected-result: Dancing Crane Cafe
 
 :model-guide:
 :todo: 
@@ -50,11 +52,11 @@ This is for Neo4j version: `{target-db-version}`
 Rendered guide available from: `:play openstreetmap` 
 // or `:play {rendered-guide}``
 
-Import Script: `cypher-shell -a <address> -u neo4j -p <password> -f {use-load-script}`
-
 Unrendered guide: link:{guide}[]
 
 Data files: `{data}`
+
+Zip file: download the link:data/{name}.zip[{name}.zip] and add it as "project from file" to a 3.5 database in https://neo4j.com/developer/neo4j-desktop[Neo4j Desktop^].
 
 === Code Examples
 

@@ -1,7 +1,6 @@
 {
     "name": "openstreetmap",
-    "description":"",
-    "scriptFile":"scripts/import.cypher",
+    "description":"Use Neo4j with the global geodata provided in OpenStreetMap",
     "dbms": [
       {
           "dumpFile": "data/openstreetmap-35.dump",
