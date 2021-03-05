@@ -1,0 +1,53 @@
+type Step @exclude(operations: "*") {
+  latitude: Float
+  longitude: Float
+}
+type Tag @exclude(operations: "*") {
+  key: String
+  value: String
+}
+type PointOfInterest @exclude(operations: ["create", "update", "delete"]) {
+  name: String
+  location: Point
+  type: String
+  wikipedia: String
+    @cypher(
+      statement: """
+      MATCH (this)-->(t:OSMTags)
+      WHERE EXISTS(t.wikipedia) WITH t LIMIT 1
+      CALL apoc.load.json('https://en.wikipedia.org/w/api.php?action=parse&prop=text&formatversion=2&format=json&page=' + apoc.text.urlencode(t.wikipedia)) YIELD value
+      RETURN value.parse.text
+      """
+    )
+  tags(limit: Int = 10): [Tag]
+    @cypher(
+      statement: """
+      MATCH (this)-->(t:OSMTags) WITH t LIMIT $limit
+      UNWIND keys(t) AS key
+      RETURN {key: key, value: t[key]} AS tag
+      """
+    )
+  routeToPOI(name: String!): [Step]
+    @cypher(
+      statement: """
+      MATCH (other:PointOfInterest {name: $name})
+      CALL gds.beta.shortestPath.dijkstra.stream({
+        nodeProjection: 'OSMNode',
+          relationshipProjection: {
+            ROUTE: {
+                type: 'ROUTE',
+                  properties: 'distance',
+                  orientation: 'UNDIRECTED'
+              }
+          },
+          sourceNode: id(this),
+          targetNode: id(other),
+          relationshipWeightProperty: 'distance'
+      })
+      YIELD nodeIds
+      WITH [nodeId IN nodeIds | gds.util.asNode(nodeId)] AS pathNodes
+      UNWIND pathNodes AS node
+      RETURN {latitude: node.location.latitude, longitude: node.location.longitude} AS route
+      """
+    )
+}
