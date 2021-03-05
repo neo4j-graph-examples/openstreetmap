@@ -32,8 +32,8 @@ const typeDefs = /* GraphQL */ `
     tags(limit: Int = 10): [Tag]
       @cypher(
         statement: """
-        MATCH (this)-->(t:OSMTags) WITH t LIMIT $limit
-        UNWIND keys(t) AS key
+        MATCH (this)-->(t:OSMTags)
+        UNWIND keys(t)[0..$limit] AS key
         RETURN {key: key, value: t[key]} AS tag
         """
       )
