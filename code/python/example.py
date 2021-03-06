@@ -4,18 +4,20 @@
 from neo4j import GraphDatabase, basic_auth
 
 driver = GraphDatabase.driver(
-  "neo4j+s://demo.neo4jlabs.com:7687",
-  auth=basic_auth("mUser", "s3cr3t"))
+  "bolt://<HOST>:<BOLTPORT>",
+  auth=basic_auth("<USERNAME>", "<PASSWORD>"))
 
 cypher_query = '''
-MATCH (m:Movie {title:$movieTitle})<-[:ACTED_IN]-(a:Person) RETURN a.name as actorName
+MATCH (n) 
+RETURN COUNT(n) AS count 
+LIMIT $limit
 '''
 
-with driver.session(database="movies") as session:
+with driver.session(database="neo4j") as session:
   results = session.read_transaction(
     lambda tx: tx.run(cypher_query,
-                      movieTitle="The Matrix").data())
+                      limit="10").data())
   for record in results:
-    print(record['actorName'])
+    print(record['count'])
 
 driver.close()

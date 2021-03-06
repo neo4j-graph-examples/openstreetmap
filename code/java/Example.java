@@ -11,25 +11,25 @@ public class Example {
 
   public static void main(String...args) {
 
-    Driver driver = GraphDatabase.driver("neo4j+s://demo.neo4jlabs.com:7687",
-              AuthTokens.basic("mUser","s3cr3t"));
+    Driver driver = GraphDatabase.driver("bolt://<HOST>:<BOLTPORT>",
+              AuthTokens.basic("<USERNAME>","<PASSWORD>"));
 
-    try (Session session = driver.session(SessionConfig.forDatabase("movies"))) {
+    try (Session session = driver.session(SessionConfig.forDatabase("neo4j"))) {
 
       String cypherQuery =
-        "MATCH (m:Movie {title:$movieTitle})<-[:ACTED_IN]-(a:Person) RETURN a.name as actorName";
+        "MATCH (n) " +
+        "RETURN COUNT(n) AS count " +
+        "LIMIT $limit";
 
       var result = session.readTransaction(
         tx -> tx.run(cypherQuery, 
-                parameters("movieTitle","The Matrix"))
+                parameters("limit","10"))
             .list());
 
       for (Record record : result) {
-        System.out.println(record.get("actorName").asString());
+        System.out.println(record.get("count").asString());
       }
     }
     driver.close();
   }
 }
-
-

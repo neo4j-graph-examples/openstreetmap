@@ -1,23 +1,25 @@
 // npm install --save neo4j-driver
 // node example.js
 const neo4j = require('neo4j-driver');
-const driver = neo4j.driver('neo4j+s://demo.neo4jlabs.com:7687',
-                  neo4j.auth.basic('mUser', 's3cr3t'), 
+const driver = neo4j.driver('bolt://<HOST>:<BOLTPORT>',
+                  neo4j.auth.basic('<USERNAME>', '<PASSWORD>'), 
                   {/* encrypted: 'ENCRYPTION_OFF' */});
 
 const query =
   `
-  MATCH (m:Movie {title:$movieTitle})<-[:ACTED_IN]-(a:Person) RETURN a.name as actorName
+  MATCH (n) 
+  RETURN COUNT(n) AS count 
+  LIMIT $limit
   `;
 
-const params = {"movieTitle": "The Matrix"};
+const params = {"limit": "10"};
 
-const session = driver.session({database:"movies"});
+const session = driver.session({database:"neo4j"});
 
 session.run(query, params)
   .then((result) => {
     result.records.forEach((record) => {
-        console.log(record.get('actorName'));
+        console.log(record.get('count'));
     });
     session.close();
     driver.close();

@@ -13,24 +13,26 @@ using Neo4j.Driver;
 namespace dotnet {
   class Example {
   static async Task Main() {
-    var driver = GraphDatabase.Driver("neo4j+s://demo.neo4jlabs.com:7687", 
-                    AuthTokens.Basic("mUser", "s3cr3t"));
+    var driver = GraphDatabase.Driver("bolt://<HOST>:<BOLTPORT>", 
+                    AuthTokens.Basic("<USERNAME>", "<PASSWORD>"));
 
     var cypherQuery =
       @"
-      MATCH (m:Movie {title:$movieTitle})<-[:ACTED_IN]-(a:Person) RETURN a.name as actorName
+      MATCH (n) 
+      RETURN COUNT(n) AS count 
+      LIMIT $limit
       ";
 
-    var session = driver.AsyncSession(o => o.WithDatabase("movies"));
+    var session = driver.AsyncSession(o => o.WithDatabase("neo4j"));
     var result = await session.ReadTransactionAsync(async tx => {
       var r = await tx.RunAsync(cypherQuery, 
-              new { movieTitle="The Matrix"});
+              new { limit="10"});
       return await r.ToListAsync();
     });
 
     await session?.CloseAsync();
     foreach (var row in result)
-      Console.WriteLine(row["actorName"].As<string>());
+      Console.WriteLine(row["count"].As<string>());
 	  
     }
   }
