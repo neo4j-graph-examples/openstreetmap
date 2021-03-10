@@ -16,15 +16,6 @@
 :model: documentation/img/model.png
 :example: documentation/img/example.png
 
-:query: MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest) +
-WHERE p1<>p2 AND distance(p1.location,p2.location) < 200 +
-RETURN p2.name as name +
-
-:param-name: type
-:param-value: clock
-:result-column: name
-:expected-result: Dancing Crane Cafe
-
 :model-guide:
 :todo: 
 image::{logo}[width=100]
@@ -40,9 +31,11 @@ image::{model}[]
 image::{example}[width=600]
 
 .Example Query:
-[source,cypher,subs=attributes]
+[source,cypher,role=query-example,param-name=type,param-value=clock,result-column=name,expected-result="Dancing Crane Cafe"]
 ----
-{query}
+MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest)
+WHERE p1<>p2 AND distance(p1.location,p2.location) < 200
+RETURN p2.name as name
 ----
 
 === Setup
