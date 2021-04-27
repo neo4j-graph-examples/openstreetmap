@@ -8,15 +8,15 @@ const driver = neo4j.driver(
 );
 
 const typeDefs = /* GraphQL */ `
-  type Step @exclude(operations: "*") {
+  type Step @exclude {
     latitude: Float
     longitude: Float
   }
-  type Tag @exclude(operations: "*") {
+  type Tag @exclude {
     key: String
     value: String
   }
-  type PointOfInterest @exclude(operations: ["create", "update", "delete"]) {
+  type PointOfInterest @exclude(operations: [CREATE, UPDATE, DELETE]) {
     name: String
     location: Point
     type: String
