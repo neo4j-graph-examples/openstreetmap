@@ -30,18 +30,18 @@ func runQuery(uri, database, username, password string) (result []string, err er
 	results, err := session.ReadTransaction(func(transaction neo4j.Transaction) (interface{}, error) {
 		result, err := transaction.Run(
 			`
-			MATCH (n) 
-			RETURN COUNT(n) AS count 
-			LIMIT $limit
+			MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest)
+			WHERE p1<>p2 AND distance(p1.location,p2.location) < 200
+			RETURN p2.name as name
 			`, map[string]interface{}{
-				"limit": "10",
+				"type": "clock",
 			})
 		if err != nil {
 			return nil, err
 		}
 		var arr []string
 		for result.Next() {
-			value, found := result.Record().Get("count")
+			value, found := result.Record().Get("name")
 			if found {
 				arr = append(arr, value.(string))
 			}
