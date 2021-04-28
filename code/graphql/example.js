@@ -7,61 +7,7 @@ const driver = neo4j.driver(
   neo4j.auth.basic("<USERNAME>", "<PASSWORD>")
 );
 
-const typeDefs = /* GraphQL */ `
-  type Step @exclude {
-    latitude: Float
-    longitude: Float
-  }
-  type Tag @exclude {
-    key: String
-    value: String
-  }
-  type PointOfInterest @exclude(operations: [CREATE, UPDATE, DELETE]) {
-    name: String
-    location: Point
-    type: String
-    wikipedia: String
-      @cypher(
-        statement: """
-        MATCH (this)-->(t:OSMTags)
-        WHERE EXISTS(t.wikipedia) WITH t LIMIT 1
-        CALL apoc.load.json('https://en.wikipedia.org/w/api.php?action=parse&prop=text&formatversion=2&format=json&page=' + apoc.text.urlencode(t.wikipedia)) YIELD value
-        RETURN value.parse.text
-        """
-      )
-    tags(limit: Int = 10): [Tag]
-      @cypher(
-        statement: """
-        MATCH (this)-->(t:OSMTags)
-        UNWIND keys(t)[0..$limit] AS key
-        RETURN {key: key, value: t[key]} AS tag
-        """
-      )
-    routeToPOI(name: String!): [Step]
-      @cypher(
-        statement: """
-        MATCH (other:PointOfInterest {name: $name})
-        CALL gds.beta.shortestPath.dijkstra.stream({
-          nodeProjection: 'OSMNode',
-            relationshipProjection: {
-              ROUTE: {
-                  type: 'ROUTE',
-                    properties: 'distance',
-                    orientation: 'UNDIRECTED'
-                }
-            },
-            sourceNode: id(this),
-            targetNode: id(other),
-            relationshipWeightProperty: 'distance'
-        })
-        YIELD nodeIds
-        WITH [nodeId IN nodeIds | gds.util.asNode(nodeId)] AS pathNodes
-        UNWIND pathNodes AS node
-        RETURN {latitude: node.location.latitude, longitude: node.location.longitude} AS route
-        """
-      )
-  }
-`;
+let typeDefs;
 
 // Create executable GraphQL schema from GraphQL type definitions,
 // using @neo4j/graphql to autogenerate resolvers
