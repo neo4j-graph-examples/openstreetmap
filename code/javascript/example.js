@@ -7,19 +7,19 @@ const driver = neo4j.driver('bolt://<HOST>:<BOLTPORT>',
 
 const query =
   `
-  MATCH (n) 
-  RETURN COUNT(n) AS count 
-  LIMIT $limit
+  MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest)
+  WHERE p1<>p2 AND distance(p1.location,p2.location) < 200
+  RETURN p2.name as name
   `;
 
-const params = {"limit": "10"};
+const params = {"type": "clock"};
 
 const session = driver.session({database:"neo4j"});
 
 session.run(query, params)
   .then((result) => {
     result.records.forEach((record) => {
-        console.log(record.get('count'));
+        console.log(record.get('name'));
     });
     session.close();
     driver.close();

@@ -8,16 +8,16 @@ driver = GraphDatabase.driver(
   auth=basic_auth("<USERNAME>", "<PASSWORD>"))
 
 cypher_query = '''
-MATCH (n) 
-RETURN COUNT(n) AS count 
-LIMIT $limit
+MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest)
+WHERE p1<>p2 AND distance(p1.location,p2.location) < 200
+RETURN p2.name as name
 '''
 
 with driver.session(database="neo4j") as session:
   results = session.read_transaction(
     lambda tx: tx.run(cypher_query,
-                      limit="10").data())
+                      type="clock").data())
   for record in results:
-    print(record['count'])
+    print(record['name'])
 
 driver.close()

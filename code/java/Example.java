@@ -17,19 +17,21 @@ public class Example {
     try (Session session = driver.session(SessionConfig.forDatabase("neo4j"))) {
 
       String cypherQuery =
-        "MATCH (n) " +
-        "RETURN COUNT(n) AS count " +
-        "LIMIT $limit";
+        "MATCH (p1:PointOfInterest {type:$type}), (p2:PointOfInterest)\n" +
+        "WHERE p1<>p2 AND distance(p1.location,p2.location) < 200\n" +
+        "RETURN p2.name as name";
 
       var result = session.readTransaction(
         tx -> tx.run(cypherQuery, 
-                parameters("limit","10"))
+                parameters("type","clock"))
             .list());
 
       for (Record record : result) {
-        System.out.println(record.get("count").asString());
+        System.out.println(record.get("name").asString());
       }
     }
     driver.close();
   }
 }
+
+
