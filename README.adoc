@@ -15,6 +15,9 @@
 :rendered-guide: https://guides.neo4j.com/sandbox/openstreetmap/index.html
 :model: documentation/img/model.png
 :example: documentation/img/example.png
+:nodes: 69165
+:relationships: 76040
+
 
 :model-guide:
 :todo: 
@@ -23,6 +26,8 @@ image::{logo}[width=100]
 == {long-name} Graph Example
 
 Description: _{description}_
+
+Nodes {nodes} Relationships {relationships}
 
 .Model
 image::{model}[]
